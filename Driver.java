@@ -1,18 +1,13 @@
-package lab2;
-
-import lab2.Polynomial;
-
 import java.io.IOException;
 import java.io.File;
-
 public class Driver {
     public static void main(String[] args) throws IOException {
-        double[] c1 = {6, -2, 5};
-        int[] e1 = {0, 1, 3};
+        double[] c1 = {2, 5, 3};
+        int[] e1 = {0, 1, 2};
         Polynomial p1 = new Polynomial(c1, e1);
 
-        double[] c2 = {5, 6};
-        int[] e2 = {0, 4};
+        double[] c2 = {1, 3};
+        int[] e2 = {0, 1};
         Polynomial p2 = new Polynomial(c2, e2);
 
         System.out.println("testing add");

@@ -1,4 +1,4 @@
-package lab2;
+
 import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,19 @@ public class Polynomial {
 		}
 		int max = Math.max(max1, max2);
 		return max;
+	}
+	public int getMax_mul(int[] array1, int[] array2){
+		int counter = 0;
+		for (int i = 0; i < array1.length; i++){
+			for(int j = 0; j < array2.length; j++){
+				int adder = array1[i] + array2[j];
+				if(adder > counter)
+					counter=adder;
+			}
+		}
+
+		return counter;
+
 	}
 
 	public Polynomial mergePolynomials(Polynomial obj) {
@@ -75,7 +88,6 @@ public class Polynomial {
 		//set a new array to have max number of coe
 		//ex. -2x+6+5x^3 && 5+6x^4 => [0,0,0,0,0]
 		double[] summed_coe = new double[max_exp + 1];
-		int[] summed_exp = new int[max_exp];
 
 		//goal: summed_coe -----> [6,-2,0,5,0]
 		for (int i = 0; i < this.coefficients.length; i++)
@@ -92,21 +104,38 @@ public class Polynomial {
 		//check if the length of exponents is empty in two polynomials, then return the other one
 		mergePolynomials(obj);
 		//call getMax method to get the max exponents in two polynomials
-		int max_exp = getMax(obj.exponents, this.exponents);
+		int max_exp = getMax_mul(obj.exponents, this.exponents);
 		//set a new array to have max number of coe
-		//ex. 6-2x+5x^3 && 5+6x^4 ------> [6,-2,0,5] && [5,0,0,0,6] ----> [0,0,0,0,0]
-		double[] mul_coe = new double[max_exp + 1];
-		//goal: mul_coe -----> [6,-2,0,5,0]
-		for (int i = 0; i < this.coefficients.length; i++)
-			mul_coe[this.exponents[i]] += this.coefficients[i];
-		//goal: coe -----> [30,-2,0,5,6] => multiply coefficients of two polynomials together
-		for (int i = 0; i < obj.coefficients.length; i++) {
-			if (mul_coe[obj.exponents[i]] != 0)
-				mul_coe[obj.exponents[i]] *= obj.coefficients[i];
-			else
-				mul_coe[obj.exponents[i]] = obj.coefficients[i];
+		//ex. 6-2x+5x^3 && 5+6x^4 ------> [6,-2,0,5] && [5,0,0,0,6] ----> [0,0,0,0,0,0]
+		double[] mul_coe = new double[max_exp+1];
+		//goal: mul_coe -----> [6,-2,0,5,0,0,0]
+		int[] mul_exp = new int[max_exp+1];
+		for(int i = 0; i < this.exponents.length; i++){
+			for(int j = 0; j < obj.exponents.length; j++){
+				int index = this.exponents[i] + obj.exponents[j];
+				mul_exp[index] = this.exponents[i] + obj.exponents[j];
+				mul_coe[index] += this.coefficients[i] * obj.coefficients[j];
+			}
 		}
-		return removeZeroTerms(mul_coe);
+
+		int num = 0;
+		for(int i = 0; i < mul_coe.length; i++){
+			if(mul_coe[i] != 0)
+				num++;
+		
+		}
+		//System.out.println(num);
+		double[] new_coe = new double[num];
+		int[] new_exp = new int[num];
+		int pos = 0;
+		for(int i = 0; i < mul_coe.length; i++){
+			if((mul_coe[i] != 0 || mul_exp[i] != 0)){
+				new_coe[pos] = mul_coe[i];
+				new_exp[pos] = mul_exp[i];
+				pos++;
+			}
+		}
+		return new Polynomial(new_coe,new_exp);
 
 
 	}
@@ -160,8 +189,7 @@ public class Polynomial {
 				System.err.println("Invalid coefficient or exponent: " + e.getMessage());
 				// Set default values or take appropriate action
 				this.coefficients[i] = 0.0;
-				this.exponents[i] = 0;
-			}
+				this.exponents[i] = 0;			}
 		}
 	}
 
